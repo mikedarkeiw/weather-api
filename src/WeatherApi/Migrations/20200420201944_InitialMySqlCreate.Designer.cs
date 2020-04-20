@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WeatherApi.Data;
 
 namespace WeatherApi.Migrations
 {
     [DbContext(typeof(LocationLogDbContext))]
-    partial class LocationLogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200420201944_InitialMySqlCreate")]
+    partial class InitialMySqlCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace WeatherApi.Entities {
     public class LocationLog {
@@ -9,11 +10,13 @@ namespace WeatherApi.Entities {
             set;
         }
 
+        [Required]
         public int WoeId {
             get;
             set;
         }
 
+        [Required]
         public DateTime Viewed {
             get;
             set;

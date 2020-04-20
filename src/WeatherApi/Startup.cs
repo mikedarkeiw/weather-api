@@ -17,6 +17,7 @@ using WeatherApi.Services;
 using WeatherApi.Entities;
 using Microsoft.EntityFrameworkCore;
 using WeatherApi.Data;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace WeatherApi
 {
@@ -49,7 +50,16 @@ namespace WeatherApi
             });
             services.AddSingleton<IWeatherApi, WeatherApiClient>();
             services.AddScoped<ILocationLogger, LocationLogger>();
-            services.AddScoped<LocationLogDbContext, LocationLogDbContext>();   
+
+            var connString = Configuration.GetConnectionString("Main");
+            Console.WriteLine($"Using connection string {connString}");
+
+            services.AddDbContextPool<LocationLogDbContext>(options => options
+                // replace with your connection string
+                .UseMySql(connString, mySqlOptions => mySqlOptions
+                    // replace with your Server Version and Type
+                    .ServerVersion(new Version(5, 7, 0), ServerType.MySql)
+                ));          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

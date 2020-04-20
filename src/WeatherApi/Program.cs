@@ -17,7 +17,7 @@ namespace WeatherApi
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+            Host.CreateDefaultBuilder(args)            
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.Sources.Clear();
@@ -32,7 +32,12 @@ namespace WeatherApi
                 })            
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                        .UseKestrel((builderContext, options) =>
+                        {
+                            options.Configure(builderContext.Configuration.GetSection("Kestrel"));
+                        })
+                        .UseStartup<Startup>();
                 });
     }
 }
