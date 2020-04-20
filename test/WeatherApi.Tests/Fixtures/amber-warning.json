@@ -1,0 +1,12 @@
+{
+    "consolidated_weather": [{
+        "min_temp": 7.75,
+        "max_temp": 13.525,
+        "the_temp": 12.415,
+        "wind_speed": 65.325765593377343
+    }],
+    "title": "London",
+    "location_type": "City",
+    "woeid": 44418,
+    "latt_long": "51.506321,-0.12714",
+}
