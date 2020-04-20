@@ -8,7 +8,28 @@ using Moq.Protected;
 
 namespace WeatherApi.Tests.Services {
     public class ApiTests {
-        public Mock<HttpMessageHandler> getMockMessageHandler(HttpStatusCode statusCode, StringContent content) {
+
+        protected string _defaultBaseUrl = "https://www.metaweather.com";
+
+        public Mock<IHttpClientFactory> GetMockHttpClientFactory(HttpMessageHandler handler) {
+            return GetMockHttpClientFactory(handler, _defaultBaseUrl);
+        }
+
+        public Mock<IHttpClientFactory> GetMockHttpClientFactory(HttpMessageHandler handler, string baseUrl) {          
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(baseUrl),
+            };            
+
+            var mockFactory = new Mock<IHttpClientFactory>();
+            mockFactory.Setup(x => x.CreateClient(It.IsAny<string>()))
+                .Returns(client)
+                .Verifiable();
+
+            return mockFactory;
+        }
+
+        public Mock<HttpMessageHandler> GetMockMessageHandler(HttpStatusCode statusCode, StringContent content) {
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
                 .Protected()
@@ -29,7 +50,7 @@ namespace WeatherApi.Tests.Services {
             return handlerMock;
         }
 
-        public HttpClient getMockHttpClient(string baseUrl, HttpMessageHandler handler) {            
+        public HttpClient GetMockHttpClient(string baseUrl, HttpMessageHandler handler) {            
             // use real http client with mocked handler here
             var httpClient = new HttpClient(handler)
             {

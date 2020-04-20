@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "sYA6XWCtjr57tLvsnp1XcRhadB2H72dww37NrJ8Fr2ueYkAotW7VF1HPCLXbGsJ6eAePxHJeJVuUhMk89Ri/ZA==",
+  "dgSpecHash": "FWFlja6H44NGWojT5YAHT+iboR3smwKVsVb20a5R/wkzx6mI7ENbGM3wQ/mhaB5FTjeBW9u5UTBIAOWEStm1GQ==",
   "success": true,
   "projectFilePath": "/Users/mikedarke/work/examples/dotnet/weather-api/test/WeatherApi.Tests/WeatherApi.Tests.csproj",
   "expectedPackageFiles": [

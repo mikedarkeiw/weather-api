@@ -2,22 +2,19 @@ using System;
 
 namespace WeatherApi.Entities {
     public class LocationLog {
+        public int Id { get; set; }
+
         public string Title {
             get;
             set;
         }
 
-        public string WoeId {
+        public int WoeId {
             get;
             set;
         }
 
-        public int ViewCount {
-            get;
-            set;
-        }
-
-        public DateTime LastViewed {
+        public DateTime Viewed {
             get;
             set;
         }

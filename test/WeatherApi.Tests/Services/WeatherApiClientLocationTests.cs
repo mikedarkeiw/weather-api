@@ -15,10 +15,9 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void ReturnsSixDaysWeather() {
             string locationData = File.ReadAllText("../../../Fixtures/london.json");
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);            
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -31,10 +30,9 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void ReturnsAYellowWarningWhenWindSpeedIsOverFifty() {
             string locationData = File.ReadAllText("../../../Fixtures/yellow-warning.json");
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);  
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -46,10 +44,9 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void ReturnsAnAmberWarningWhenWindSpeedIsOverSixty() {
             string locationData = File.ReadAllText("../../../Fixtures/amber-warning.json");
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);  
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -61,10 +58,9 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void ReturnsARedWarningWhenWindSpeedIsOverSeventy() {
             string locationData = File.ReadAllText("../../../Fixtures/red-warning.json");
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);  
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -75,31 +71,28 @@ namespace WeatherApi.Tests.Services {
 
         [Fact]
         public async void ReturnsNullIfApiCallFails() {
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
-
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);  
             // Act
             var result = await apiClient.GetLocation("abc1");  
 
             // Assert
-            Assert.Equal(null, result);            
+            Assert.Null(result);            
         }
 
         [Fact]
         public async void ReturnsNullIfNoLocationIdPassed() {
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object); 
 
             // Act
             var result = await apiClient.GetLocation(null);  
 
             // Assert
-            Assert.Equal(null, result); 
-            var expectedUri = new Uri($"{baseUrl}/api/location/");
+            Assert.Null(result); 
+            var expectedUri = new Uri($"{_defaultBaseUrl}/api/location/");
             
             mockHandler.Protected().Verify(
                 "SendAsync",

@@ -16,22 +16,21 @@ namespace WeatherApi.Tests.Services {
             // Arrange
             var searchResult = "[{'title':'Leeds','location_type':'City','woeid':26042,'latt_long':'53.794491,-1.546580'}]";
 
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);
 
             // Act
             var result = await apiClient.LocationSearch("Leeds");            
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, result.Count);
+            Assert.Single(result);
             var firstResult = result[0];
             Assert.Equal(26042, firstResult.WoeId);
             
             // also check the 'http' call was like we expected it
-            var expectedUri = new Uri($"{baseUrl}/api/location/search?query=Leeds");
+            var expectedUri = new Uri($"{_defaultBaseUrl}/api/location/search?query=Leeds");
             
             mockHandler.Protected().Verify(
                 "SendAsync",
@@ -49,20 +48,19 @@ namespace WeatherApi.Tests.Services {
             // Arrange
             var searchResult = "[]";
 
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);
 
             // Act
             var result = await apiClient.LocationSearch("Leeds");            
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(0, result.Count);
+            Assert.Empty(result);
             
             // also check the 'http' call was like we expected it
-            var expectedUri = new Uri($"{baseUrl}/api/location/search?query=Leeds");
+            var expectedUri = new Uri($"{_defaultBaseUrl}/api/location/search?query=Leeds");
             
             mockHandler.Protected().Verify(
                 "SendAsync",
@@ -78,20 +76,19 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void ReturnsAnEmptyListIfApiRequestFails() {
             // Arrange
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);
 
             // Act
             var result = await apiClient.LocationSearch("London");            
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(0, result.Count);
+            Assert.Empty(result);
             
             // also check the 'http' call was like we expected it
-            var expectedUri = new Uri($"{baseUrl}/api/location/search?query=London");
+            var expectedUri = new Uri($"{_defaultBaseUrl}/api/location/search?query=London");
             
             mockHandler.Protected().Verify(
                 "SendAsync",
@@ -107,17 +104,16 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void ReturnsAnEmptyListAndNoApiCallIfNoQueryIsPassed() {
             // Arrange
-            var baseUrl = "https://www.metaweather.com";
-            var mockHandler = getMockMessageHandler(HttpStatusCode.OK, null);
-            var httpClient = getMockHttpClient(baseUrl, mockHandler.Object);
-            var apiClient = new WeatherApiClient(httpClient);
+            var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, null);
+            var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
+            var apiClient = new WeatherApiClient(mockFactory.Object);
 
             // Act
             var result = await apiClient.LocationSearch(null);            
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(0, result.Count);
+            Assert.Empty(result);
             
             mockHandler.Protected().Verify(
                 "SendAsync",

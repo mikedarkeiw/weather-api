@@ -15,6 +15,8 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using WeatherApi.Services;
 using WeatherApi.Entities;
+using Microsoft.EntityFrameworkCore;
+using WeatherApi.Data;
 
 namespace WeatherApi
 {
@@ -42,8 +44,12 @@ namespace WeatherApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Weather API", Version = "v1" });
             });
 
+            services.AddHttpClient("metaweather", c => {
+                c.BaseAddress = new Uri("https://www.metaweather.com");
+            });
             services.AddSingleton<IWeatherApi, WeatherApiClient>();
-            services.AddScoped<ILocationLogger, LocationLogger>();       
+            services.AddScoped<ILocationLogger, LocationLogger>();
+            services.AddScoped<LocationLogDbContext, LocationLogDbContext>();   
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

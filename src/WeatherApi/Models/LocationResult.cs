@@ -9,6 +9,12 @@ namespace WeatherApi.Models {
             set;
         }
 
+        [JsonProperty("woeid")]
+        public string WoeId {
+            get;
+            set;
+        }        
+
         [JsonProperty("location_type")]
         public string LocationType {
             get;
@@ -17,6 +23,12 @@ namespace WeatherApi.Models {
 
         [JsonProperty("consolidated_weather")]
         public List<Weather> ConsolidatedWeather {
+            get;
+            set;
+        }
+
+        [JsonProperty("daily_view_count")]
+        public int DailyViewCount {
             get;
             set;
         }

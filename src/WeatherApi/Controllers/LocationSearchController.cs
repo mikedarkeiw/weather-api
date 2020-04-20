@@ -11,11 +11,13 @@ namespace WeatherApi.Controllers {
 
         readonly ILogger<LocationSearchController> _logger;
         readonly IWeatherApi _apiClient;
+        readonly ILocationLogger _locationLogger;
 
-        public LocationSearchController(ILogger<LocationSearchController> logger, IWeatherApi apiClient)
+        public LocationSearchController(ILogger<LocationSearchController> logger, IWeatherApi apiClient, ILocationLogger locationLogger)
         {
             _logger = logger;
-            _apiClient = apiClient;       
+            _apiClient = apiClient;  
+            _locationLogger = locationLogger;     
         }
 
         [HttpGet]
@@ -41,6 +43,8 @@ namespace WeatherApi.Controllers {
             }
 
             var result = await _apiClient.GetLocation(locationId);
+            await _locationLogger.OnLocationView(result);
+            result.DailyViewCount = _locationLogger.GetDailyLocationViews(int.Parse(result.WoeId));
             
             return Ok(result);
         }                

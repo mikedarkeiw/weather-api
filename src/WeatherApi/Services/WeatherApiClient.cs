@@ -7,18 +7,10 @@ using System.Collections.Generic;
 
 namespace WeatherApi.Services {
     public class WeatherApiClient : IWeatherApi {
-        readonly HttpClient client;
+        readonly IHttpClientFactory _clientFactory;
 
-        public WeatherApiClient(HttpClient client) {
-            this.client = client;
-        }
-
-        public WeatherApiClient() {
-            this.client = new HttpClient()
-            {
-                BaseAddress = new Uri("https://www.metaweather.com"),
-            };
-
+        public WeatherApiClient(IHttpClientFactory clientFactory) {
+            _clientFactory = clientFactory;
         }
 
         public async Task<List<LocationSearchResult>> LocationSearch(string location) {
@@ -28,6 +20,7 @@ namespace WeatherApi.Services {
                 return result;
             }
 
+            var client = _clientFactory.CreateClient("metaweather");
             var response = await client.GetAsync($"/api/location/search?query={location}");
 
             if (response.IsSuccessStatusCode) {
@@ -44,6 +37,7 @@ namespace WeatherApi.Services {
                 return result;
             }
 
+            var client = _clientFactory.CreateClient("metaweather");
             var response = await client.GetAsync($"/api/location/{locationId}");
 
             if (response.IsSuccessStatusCode) {
