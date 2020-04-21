@@ -15,7 +15,7 @@ namespace WeatherApi.Tests.Services {
         [Fact]
         public async void CallsTheMetaWeatherApiUrlWithQueryParam() {
             // Arrange
-            var searchResult = "[{'title':'Leeds','location_type':'City','woeid':26042,'latt_long':'53.794491,-1.546580'}]";
+            var searchResult = "[{\"title\":\"Leeds\",\"location_type\":\"City\",\"woeid\":26042,\"latt_long\":\"53.794491,-1.546580\"}]";
 
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
