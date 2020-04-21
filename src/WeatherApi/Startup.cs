@@ -1,19 +1,14 @@
 using System;
-using System.Data.SqlClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using WeatherApi.Services;
 using Microsoft.EntityFrameworkCore;
 using WeatherApi.Data;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using System.Data.Common;
 
 namespace WeatherApi
 {
@@ -52,7 +47,10 @@ namespace WeatherApi
                 .UseMySql(connString, mySqlOptions => mySqlOptions
                     // replace with your Server Version and Type
                     .ServerVersion(new Version(5, 7, 0), ServerType.MySql)
-                ));          
+                )); 
+
+            // Register the service and implementation for the database context
+	        services.AddScoped<ILocationLogDbContext>(provider => provider.GetService<LocationLogDbContext>());    
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,5 +1,4 @@
 using System;
-using Microsoft.EntityFrameworkCore;
 using WeatherApi.Data;
 using WeatherApi.Entities;
 using WeatherApi.Models;
@@ -11,13 +10,14 @@ namespace WeatherApi.Services {
     public interface ILocationLogger
     {
         Task<int> OnLocationView(LocationResult location);
-        int GetDailyLocationViews(int woeId);
+        int GetDailyLocationViews(int woeId, DateTime date);
+        int GetTodaysLocationViews(int woeId);
     }
 
     public class LocationLogger : ILocationLogger
     {
-        readonly LocationLogDbContext _db;
-        public LocationLogger(LocationLogDbContext db) {
+        readonly ILocationLogDbContext _db;
+        public LocationLogger(ILocationLogDbContext db) {
             _db = db;
         }
 
@@ -33,11 +33,16 @@ namespace WeatherApi.Services {
             return await _db.SaveChangesAsync();
         }
 
-        public int GetDailyLocationViews(int woeId) {
+        public int GetDailyLocationViews(int woeId, DateTime date) {
             return _db.LogEntries
                 .Where(l => l.WoeId == woeId)
-                .Where(l => l.Viewed.Date == DateTime.Now.Date)
+                .Where(l => l.Viewed.Date == date)
                 .Count();        
         }
+
+        public int GetTodaysLocationViews(int woeId) {
+            return GetDailyLocationViews(woeId, DateTime.Now.Date);
+        }
+
     }
 }

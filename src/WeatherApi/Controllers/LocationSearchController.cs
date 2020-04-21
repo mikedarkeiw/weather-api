@@ -22,14 +22,16 @@ namespace WeatherApi.Controllers {
 
         [HttpGet]
         [Route("search")]
-        [Route("search/{location}")]
-        public async Task<IActionResult> Search(string location)
+        public async Task<IActionResult> Search(string query)
         {
-            if (string.IsNullOrEmpty(location)) {
+            if (string.IsNullOrEmpty(query)) {
                 return BadRequest();
             }
 
-            var result = await _apiClient.LocationSearch(location);
+            var result = await _apiClient.LocationSearch(query);
+            if (result == null) {
+                return NoContent();
+            }
             
             return Ok(result);
         } 
@@ -48,7 +50,7 @@ namespace WeatherApi.Controllers {
             }
 
             await _locationLogger.OnLocationView(result);
-            result.DailyViewCount = _locationLogger.GetDailyLocationViews(result.WoeId);
+            result.DailyViewCount = _locationLogger.GetTodaysLocationViews(result.WoeId);
             
             return Ok(result);
         }                
