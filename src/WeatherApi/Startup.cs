@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,10 +10,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using WeatherApi.Services;
-using WeatherApi.Entities;
 using Microsoft.EntityFrameworkCore;
 using WeatherApi.Data;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using System.Data.Common;
 
 namespace WeatherApi
 {
@@ -33,11 +29,8 @@ namespace WeatherApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                // Use the default property (Pascal) casing
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            services.AddControllers().AddJsonOptions(options => {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
             });
 
             services.AddSwaggerGen(c =>

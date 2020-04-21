@@ -1,27 +1,27 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using WeatherApi.Services;
 
 namespace WeatherApi.Models {
     public class Weather {
-        [JsonProperty("wind_speed")]
+        [JsonPropertyName("wind_speed")]
         public float WindSpeed {
             get;
             set;
         }
 
-        [JsonProperty("wind_direction")]
+        [JsonPropertyName("wind_direction")]
         public float WindDirection {
             get;
             set;
         }
 
-        [JsonProperty("min_temp")]
+        [JsonPropertyName("min_temp")]
         public float MinTemp {
             get;
             set;
         }
 
-        [JsonProperty("max_temp")]
+        [JsonPropertyName("max_temp")]
         public float MaxTemp {
             get;
             set;

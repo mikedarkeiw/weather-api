@@ -1,13 +1,13 @@
 using System;
 using Moq;
 using Xunit;
-using Newtonsoft.Json;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using Moq.Protected;
 using System.Threading;
 using WeatherApi.Services;
+using Microsoft.Extensions.Logging;
 
 namespace WeatherApi.Tests.Services {
     public class WeatherApiClientLocationTests : ApiTests {
@@ -17,7 +17,8 @@ namespace WeatherApi.Tests.Services {
             string locationData = File.ReadAllText("../../../Fixtures/london.json");
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);            
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);            
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -32,7 +33,8 @@ namespace WeatherApi.Tests.Services {
             string locationData = File.ReadAllText("../../../Fixtures/yellow-warning.json");
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);  
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -46,7 +48,8 @@ namespace WeatherApi.Tests.Services {
             string locationData = File.ReadAllText("../../../Fixtures/amber-warning.json");
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);  
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);  
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -60,7 +63,8 @@ namespace WeatherApi.Tests.Services {
             string locationData = File.ReadAllText("../../../Fixtures/red-warning.json");
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(locationData));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);  
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);  
 
             // Act
             var result = await apiClient.GetLocation("abc1");  
@@ -73,7 +77,8 @@ namespace WeatherApi.Tests.Services {
         public async void ReturnsNullIfApiCallFails() {
             var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);  
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);  
             // Act
             var result = await apiClient.GetLocation("abc1");  
 
@@ -85,7 +90,8 @@ namespace WeatherApi.Tests.Services {
         public async void ReturnsNullIfNoLocationIdPassed() {
             var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object); 
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object); 
 
             // Act
             var result = await apiClient.GetLocation(null);  

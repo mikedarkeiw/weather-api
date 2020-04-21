@@ -1,34 +1,53 @@
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace WeatherApi.Models {
     public class LocationResult {
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title {
             get;
             set;
         }
 
-        [JsonProperty("woeid")]
-        public string WoeId {
+        [JsonPropertyName("woeid")]
+        public int WoeId {
             get;
             set;
         }        
 
-        [JsonProperty("location_type")]
+        [JsonPropertyName("location_type")]
         public string LocationType {
             get;
             set;
+        
         }
-
-        [JsonProperty("consolidated_weather")]
-        public List<Weather> ConsolidatedWeather {
+        [JsonPropertyName("sun_rise")]
+        public DateTime SunRise {
             get;
             set;
         }
 
-        [JsonProperty("daily_view_count")]
+        [JsonPropertyName("sun_set")]
+        public DateTime SunSet {
+            get;
+            set;
+        }
+
+        [JsonPropertyName("timezone_name")]
+        public string TimezoneName {
+            get;
+            set;
+        }        
+
+        [JsonPropertyName("daily_view_count")]
         public int DailyViewCount {
+            get;
+            set;
+        }           
+
+        [JsonPropertyName("consolidated_weather")]
+        public List<Weather> ConsolidatedWeather {
             get;
             set;
         }

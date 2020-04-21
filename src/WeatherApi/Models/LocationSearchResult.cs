@@ -1,26 +1,26 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace WeatherApi.Models {
     public class LocationSearchResult  {
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title {
             get;
             set;
         } 
 
-        [JsonProperty("location_type")]
+        [JsonPropertyName("location_type")]
         public string LocationType {
             get;
             set;
         }
 
-        [JsonProperty("woeid")]
+        [JsonPropertyName("woeid")]
         public int WoeId {
             get;
             set;
         }
 
-        [JsonProperty("latt_long")]
+        [JsonPropertyName("latt_long")]
         public string LattLong {
             get;
             set;

@@ -43,8 +43,12 @@ namespace WeatherApi.Controllers {
             }
 
             var result = await _apiClient.GetLocation(locationId);
+            if (result == null) {
+                return NoContent();
+            }
+
             await _locationLogger.OnLocationView(result);
-            result.DailyViewCount = _locationLogger.GetDailyLocationViews(int.Parse(result.WoeId));
+            result.DailyViewCount = _locationLogger.GetDailyLocationViews(result.WoeId);
             
             return Ok(result);
         }                

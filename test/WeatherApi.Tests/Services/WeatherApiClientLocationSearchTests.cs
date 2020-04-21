@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using WeatherApi.Services;
@@ -18,7 +19,8 @@ namespace WeatherApi.Tests.Services {
 
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);
 
             // Act
             var result = await apiClient.LocationSearch("Leeds");            
@@ -50,7 +52,8 @@ namespace WeatherApi.Tests.Services {
 
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, new StringContent(searchResult));
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);
 
             // Act
             var result = await apiClient.LocationSearch("Leeds");            
@@ -78,7 +81,8 @@ namespace WeatherApi.Tests.Services {
             // Arrange
             var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);
 
             // Act
             var result = await apiClient.LocationSearch("London");            
@@ -106,7 +110,8 @@ namespace WeatherApi.Tests.Services {
             // Arrange
             var mockHandler = GetMockMessageHandler(HttpStatusCode.OK, null);
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
-            var apiClient = new WeatherApiClient(mockFactory.Object);
+            var mockLogger = new Mock<ILogger<WeatherApiClient>>();
+            var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);
 
             // Act
             var result = await apiClient.LocationSearch(null);            

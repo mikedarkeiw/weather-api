@@ -25,7 +25,7 @@ namespace WeatherApi.Services {
         {
             var logItem = new LocationLog {
                 Title = location.Title,
-                WoeId = int.Parse(location.WoeId),
+                WoeId = location.WoeId,
                 Viewed = DateTime.Now
             };
 
