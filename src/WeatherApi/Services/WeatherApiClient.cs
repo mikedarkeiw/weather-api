@@ -41,7 +41,7 @@ namespace WeatherApi.Services {
 
         public async Task<T> Get<T>(string url) {
             var client = _clientFactory.CreateClient("metaweather");
-            _logger.LogInformation($"Requesting {url} from MetaWeather API");
+            //_logger.LogInformation($"Requesting {url} from MetaWeather API");
             var response = await client.GetAsync(url);
 
             if (response.IsSuccessStatusCode) {
