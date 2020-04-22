@@ -21,7 +21,7 @@ namespace WeatherApi.Tests.Services {
             var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);            
 
             // Act
-            var result = await apiClient.GetLocation("abc1");  
+            var result = await apiClient.GetLocation(31253);  
 
             // Assert
             Assert.NotNull(result);   
@@ -37,7 +37,7 @@ namespace WeatherApi.Tests.Services {
             var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);
 
             // Act
-            var result = await apiClient.GetLocation("abc1");  
+            var result = await apiClient.GetLocation(123566543);  
 
             // Assert
             Assert.Equal("yellow", result.ConsolidatedWeather[0].Warning);             
@@ -52,7 +52,7 @@ namespace WeatherApi.Tests.Services {
             var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);  
 
             // Act
-            var result = await apiClient.GetLocation("abc1");  
+            var result = await apiClient.GetLocation(2352);  
 
             // Assert
             Assert.Equal("amber", result.ConsolidatedWeather[0].Warning);             
@@ -67,7 +67,7 @@ namespace WeatherApi.Tests.Services {
             var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);  
 
             // Act
-            var result = await apiClient.GetLocation("abc1");  
+            var result = await apiClient.GetLocation(1234);  
 
             // Assert
             Assert.Equal("red", result.ConsolidatedWeather[0].Warning);             
@@ -80,21 +80,21 @@ namespace WeatherApi.Tests.Services {
             var mockLogger = new Mock<ILogger<WeatherApiClient>>();
             var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object);  
             // Act
-            var result = await apiClient.GetLocation("abc1");  
+            var result = await apiClient.GetLocation(1234);  
 
             // Assert
             Assert.Null(result);            
         }
 
         [Fact]
-        public async void ReturnsNullIfNoLocationIdPassed() {
+        public async void ReturnsNullIfZeroIsPassed() {
             var mockHandler = GetMockMessageHandler(HttpStatusCode.GatewayTimeout, null);
             var mockFactory = GetMockHttpClientFactory(mockHandler.Object);
             var mockLogger = new Mock<ILogger<WeatherApiClient>>();
             var apiClient = new WeatherApiClient(mockFactory.Object, mockLogger.Object); 
 
             // Act
-            var result = await apiClient.GetLocation(null);  
+            var result = await apiClient.GetLocation(0);  
 
             // Assert
             Assert.Null(result); 

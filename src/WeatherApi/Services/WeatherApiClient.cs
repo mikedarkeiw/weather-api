@@ -30,17 +30,18 @@ namespace WeatherApi.Services {
             return result;
         }
 
-        public async Task<LocationResult> GetLocation(string locationId) {
-            if (String.IsNullOrEmpty(locationId)) {
+        public async Task<LocationResult> GetLocation(int locationId) {
+            if (locationId <= 0) {
                 return null;
             }
 
-            var url = $"/api/location/{locationId}";
+            var url = $"/api/location/{locationId.ToString()}";
             return await Get<LocationResult>(url);
         }
 
         public async Task<T> Get<T>(string url) {
             var client = _clientFactory.CreateClient("metaweather");
+            _logger.LogInformation($"Requesting {url} from MetaWeather API");
             var response = await client.GetAsync(url);
 
             if (response.IsSuccessStatusCode) {

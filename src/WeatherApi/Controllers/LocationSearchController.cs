@@ -38,9 +38,9 @@ namespace WeatherApi.Controllers {
 
         [HttpGet]
         [Route("{locationId}")]
-        public async Task<IActionResult> GetLocation(string locationId)
+        public async Task<IActionResult> GetLocation(int locationId)
         {
-            if (string.IsNullOrEmpty(locationId)) {
+            if (locationId <= 0) {
                 return BadRequest();
             }
 
