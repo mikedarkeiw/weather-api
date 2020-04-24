@@ -5,8 +5,8 @@ resource "aws_rds_cluster" "location_log" {
   master_password      = data.aws_ssm_parameter.rds_password.value
   master_username      = var.rds_username
   skip_final_snapshot  = true
-  availability_zones   = ["${var.aws_region}a", "${var.aws_region}b"]
-  db_subnet_group_name = aws_db_subnet_group.rds_subnets.name
+  availability_zones   = module.vpc.azs
+  db_subnet_group_name = module.vpc.database_subnet_group
   vpc_security_group_ids = [aws_security_group.allow_mysql.id]
   database_name        = var.database_name 
   apply_immediately    = true
@@ -24,11 +24,11 @@ resource "aws_rds_cluster" "location_log" {
   } 
 }
 
-resource "aws_db_subnet_group" "rds_subnets" {
-  name       = "${var.stack_name}-rds-log-subnet-group"
-  subnet_ids = var.subnet_ids
+# resource "aws_db_subnet_group" "rds_subnets" {
+#   name       = "${var.stack_name}-rds-log-subnet-group"
+#   subnet_ids = module.vpc.database_subnets
 
-  tags = {
-    App = var.stack_name
-  }
-}
+#   tags = {
+#     App = var.stack_name
+#   }
+# }

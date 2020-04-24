@@ -12,6 +12,7 @@ namespace WeatherApi.Services {
         Task<int> OnLocationView(LocationResult location);
         int GetDailyLocationViews(int woeId, DateTime date);
         int GetTodaysLocationViews(int woeId);
+
     }
 
     public class LocationLogger : ILocationLogger

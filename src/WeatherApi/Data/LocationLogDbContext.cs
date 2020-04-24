@@ -6,12 +6,14 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace  WeatherApi.Data {
     public interface ILocationLogDbContext {
         DbSet<LocationLog> LogEntries {get; set;}
         EntityEntry Add([NotNullAttribute] object entity);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        DatabaseFacade Database { get; }
     }
 
     public class LocationLogDbContext : DbContext, ILocationLogDbContext

@@ -1,4 +1,6 @@
+**/.DS_Store
 **/bin
 **/obj
 db-data/*
 packages/*
+terraform/.terraform

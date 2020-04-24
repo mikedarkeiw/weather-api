@@ -8,18 +8,18 @@ resource "aws_lambda_function" "weather_api_lambda" {
     reserved_concurrent_executions = -1
     memory_size = 512
     timeout = 6
-    vpc_config = {
-        subnet_ids = var.subnet_ids
+    vpc_config {
+        subnet_ids = module.vpc.private_subnets
         security_group_ids = [aws_security_group.all_https.id]
+    }
+    environment {
+        variables = {
+            ConnectionStrings__Main = "server=${aws_rds_cluster.location_log.endpoint};port=3306;user=${var.rds_username};password=${data.aws_ssm_parameter.rds_password.value};database=${var.database_name};"
+        }
     }
     tags = {
         App = var.stack_name
-    }
-    environment = {
-        variables = {
-            ConnectionStrings__Main = "server=db;port=3306;user=${var.rds_username};password=${data.aws_ssm_parameter.rds_password.value};database=${var.database_name};"
-        }
-    }
+    }    
 }
 
 resource "aws_lambda_permission" "lambda_permission" {

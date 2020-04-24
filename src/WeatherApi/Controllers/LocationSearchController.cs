@@ -16,7 +16,7 @@ namespace WeatherApi.Controllers {
         public LocationSearchController(ILogger<LocationSearchController> logger, IWeatherApi apiClient, ILocationLogger locationLogger)
         {
             _logger = logger;
-            _apiClient = apiClient;  
+            _apiClient = apiClient;
             _locationLogger = locationLogger;     
         }
 

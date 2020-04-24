@@ -40,14 +40,16 @@ namespace WeatherApi
             services.AddScoped<ILocationLogger, LocationLogger>();
 
             var connString = Configuration.GetConnectionString("Main");
-            Console.WriteLine($"Using connection string {connString}");
+            var commandTimeout = Configuration.GetSection("Database").GetValue<int>("CommandTimeout", 2);
+            Console.WriteLine($"Using connection string {connString} with timeout {commandTimeout}");
 
             services.AddDbContextPool<LocationLogDbContext>(options => options
                 // replace with your connection string
                 .UseMySql(connString, mySqlOptions => mySqlOptions
                     // replace with your Server Version and Type
                     .ServerVersion(new Version(5, 7, 0), ServerType.MySql)
-                )); 
+                    .CommandTimeout(commandTimeout)
+                ));
 
             // Register the service and implementation for the database context
 	        services.AddScoped<ILocationLogDbContext>(provider => provider.GetService<LocationLogDbContext>());    
