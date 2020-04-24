@@ -13,3 +13,8 @@ package-debug-lambda:
 	cd src/WeatherApi && dotnet publish -c Debug /p:GenerateRuntimeConfigurationFiles=true
 	cd src/WeatherApi/bin/Debug/netcoreapp3.1/publish && \
 		zip -r ../../../../../../packages/api.zip ./		
+
+aws-deploy:
+	$(MAKE) package-debug-lambda
+	cd terraform && terraform init
+	cd terraform && terraform apply
