@@ -1,0 +1,138 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Creates the infrastructure to deploy the Weather API",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [],
+            "ParameterLabels": {}
+        }
+    },
+    "Parameters": {
+        "StacksBucketName": {
+            "Description": "The S3 bucket holding the referenced stacks",
+            "Type": "String",
+            "Default": "miked-cf-stacks"
+        },
+        "LambdaBucketName": {
+            "Description": "The S3 bucket holding the packaged lambda",
+            "Type": "String",
+            "Default": "miked-lambda-packages"
+        },
+        "NetworkStackName": {
+            "Description": "The S3 bucket holding the packaged lambda",
+            "Type": "String",
+            "Default": "weather-api-vpc"
+        }                                           
+    },
+    "Resources": {
+
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },                
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                ]
+            }
+            
+        },
+
+        "WeatherLambdaSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription" : "Allow http requests",
+                "VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VPCID"}},
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 80,
+                    "ToPort" : 80,
+                    "CidrIp" : "0.0.0.0/0"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 443,
+                    "ToPort" : 443,
+                    "CidrIp" : "0.0.0.0/0"
+                }],
+                "SecurityGroupEgress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 0,
+                    "ToPort" : 0,
+                    "CidrIp" : "0.0.0.0/0"
+                }]
+            }            
+        },
+
+        "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription" : "Allow MySql/Aurora requests",
+                "VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VPCID"}},
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 3306,
+                    "ToPort" : 3306,
+                    "SourceSecurityGroupId": { "Fn:GetAtt": ["WeatherLambdaSecurityGroup", "GroupId"]}
+                }],
+                "SecurityGroupEgress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 0,
+                    "ToPort" : 0,
+                    "CidrIp" : "0.0.0.0/0"
+                }]
+            }            
+        },        
+
+        "WeatherApiLambda": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Handler": "WeatherApi::WeatherApi.LambdaEntryPoint::FunctionHandlerAsync",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                },
+                "Code": {
+                    "S3Bucket": { "Ref": "LambdaBucketName" },
+                    "S3Key": "weather-api.zip"
+                },
+                "Runtime": "dotnetcore3.1",
+                "Timeout": 6,
+                "MemorySize": 512,
+                "TracingConfig": {
+                    "Mode": "Active"
+                },
+                "VpcConfig": {
+                    "SecurityGroupIds" : [ { "Fn::GetAtt": ["WeatherLambdaSecurityGroup", "GroupId"] } ],
+                    "SubnetIds" : [
+                        {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-PrivateSubnet1AID"}},
+                        {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-PrivateSubnet1BID"}}
+                    ]
+                }
+            }
+        },
+
+        "WeatherApi" : {
+            "Type" : "AWS::CloudFormation::Stack",
+            "Properties" : {
+                "TemplateURL" : "https://s3.amazonaws.com/miked-cf-stacks/api-proxy.cf.json",
+                "Parameters" : {
+                    "ApiName" : "weather-api",
+                    "LambdaArn" : { "Fn::GetAtt" : [ "WeatherApiLambda", "arn" ] }
+                }
+            }
+        }
+    }
+}

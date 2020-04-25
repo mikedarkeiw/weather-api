@@ -1,0 +1,96 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Creates the infrastructure to deploy the Weather API",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [],
+            "ParameterLabels": {}
+        }
+    },
+    "Parameters": {
+        "ApiName": {
+            "Description": "The name of the API",
+            "Type": "String"
+        },
+        "LambdaArn": {
+            "Description": "The proxy lambda that will be called",
+            "Type": "String"
+        }                           
+    },
+    "Resources": {
+        "ProxyApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+                "Body": {
+                    "swagger": 2,
+                    "info": {
+                        "version": "0.0.1",
+                        "title": "test"
+                    },
+                    "basePath": "/",
+                    "schemes": [
+                        "https"
+                    ],
+                    "definitions": {
+                        "Empty": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "Name": { "Ref": "ApiName" },
+                "Parameters": {
+                    "endpointConfigurationTypes": "REGIONAL"
+                }
+            }
+        },
+
+        "ProxyResource": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+                "RestApiId": {
+                    "Ref": "ProxyApi"
+                },
+                "ParentId": {
+                    "Fn::GetAtt": [
+                        "ProxyApi",
+                        "RootResourceId"
+                    ]
+                },
+                "PathPart": "{proxy+}"
+            }
+        },
+
+        "ProxyMethod": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "HttpMethod": "GET",
+                "ResourceId": {
+                    "Fn::GetAtt": [
+                        "RestApi",
+                        "RootResourceId"
+                    ]
+                },
+                "RestApiId": { "Ref": "ProxyApi" },
+                "AuthorizationType": "NONE",
+                "Integration": {
+                    "Type": "AWS_PROXY",
+                    "Uri": { "Ref": "LambdaArn" },
+                    "IntegrationHttpMethod": "POST"
+                },
+                "OperationName": "Proxy Request",
+            }
+        },
+
+        "Deployment": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+                "RestApiId": {
+                    "Ref": "ProxyApi"
+                },
+                "Description": "Test deployment",
+                "StageName": "TestStage"
+            }
+        }
+
+    }
+}
