@@ -35,10 +35,13 @@ namespace WeatherApi.Services {
         }
 
         public int GetDailyLocationViews(int woeId, DateTime date) {
-            return _db.LogEntries
+            var count = _db.LogEntries?
+                .DefaultIfEmpty()
                 .Where(l => l.WoeId == woeId)
                 .Where(l => l.Viewed.Date == date)
-                .Count();        
+                .Count();
+
+            return (count == null) ? 0 : (int) count;                       
         }
 
         public int GetTodaysLocationViews(int woeId) {

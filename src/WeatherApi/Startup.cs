@@ -43,16 +43,17 @@ namespace WeatherApi
             var commandTimeout = Configuration.GetSection("Database").GetValue<int>("CommandTimeout", 2);
             Console.WriteLine($"Using connection string {connString} with timeout {commandTimeout}");
 
-            services.AddDbContextPool<LocationLogDbContext>(options => options
-                // replace with your connection string
-                .UseMySql(connString, mySqlOptions => mySqlOptions
-                    // replace with your Server Version and Type
-                    .ServerVersion(new Version(5, 7, 0), ServerType.MySql)
-                    .CommandTimeout(commandTimeout)
-                ));
+            // services.AddDbContextPool<LocationLogDbContext>(options => options
+            //     // replace with your connection string
+            //     .UseMySql(connString, mySqlOptions => mySqlOptions
+            //         // replace with your Server Version and Type
+            //         .ServerVersion(new Version(5, 7, 0), ServerType.MySql)
+            //         .CommandTimeout(commandTimeout)
+            //     ));
 
-            // Register the service and implementation for the database context
-	        services.AddScoped<ILocationLogDbContext>(provider => provider.GetService<LocationLogDbContext>());    
+            // // Register the service and implementation for the database context
+	        // services.AddScoped<ILocationLogDbContext>(provider => provider.GetService<LocationLogDbContext>());
+            services.AddScoped<ILocationLogDbContext, FakeLocationLogDbContext>();  
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

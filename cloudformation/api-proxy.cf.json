@@ -18,6 +18,7 @@
         }                           
     },
     "Resources": {
+
         "ProxyApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
@@ -63,18 +64,15 @@
         "ProxyMethod": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
-                "HttpMethod": "GET",
-                "ResourceId": {
-                    "Fn::GetAtt": [
-                        "RestApi",
-                        "RootResourceId"
-                    ]
-                },
+                "HttpMethod": "ANY",
+                "ResourceId": { "Ref": "ProxyResource" },
                 "RestApiId": { "Ref": "ProxyApi" },
                 "AuthorizationType": "NONE",
                 "Integration": {
                     "Type": "AWS_PROXY",
-                    "Uri": { "Ref": "LambdaArn" },
+                    "Uri": { "Fn::Sub" :
+                        "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations" 
+                    },
                     "IntegrationHttpMethod": "POST"
                 },
                 "OperationName": "Proxy Request",
@@ -83,6 +81,7 @@
 
         "Deployment": {
             "Type": "AWS::ApiGateway::Deployment",
+            "DependsOn": "ProxyMethod",
             "Properties": {
                 "RestApiId": {
                     "Ref": "ProxyApi"
@@ -90,7 +89,17 @@
                 "Description": "Test deployment",
                 "StageName": "TestStage"
             }
-        }
+        },
+
+        "InvokeLambaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": { "Ref": "LambdaArn" },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": { "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ProxyApi}/*/*/*" }
+            }
+        },        
 
     }
 }

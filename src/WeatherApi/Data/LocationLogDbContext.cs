@@ -22,4 +22,25 @@ namespace  WeatherApi.Data {
 
         public LocationLogDbContext(DbContextOptions<LocationLogDbContext> options) : base(options) {}
     }
+
+    public class FakeLocationLogDbContext : ILocationLogDbContext
+    {
+        public DbSet<LocationLog> LogEntries { get; set; }
+
+        public DatabaseFacade Database => throw new NotImplementedException();
+
+        public FakeLocationLogDbContext() {}
+
+        public EntityEntry Add([NotNull] object entity)
+        {
+            return null;
+            //throw new NotImplementedException();
+        }
+
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => 1);
+            //throw new NotImplementedException();
+        }
+    }    
 }

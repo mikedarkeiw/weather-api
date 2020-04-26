@@ -43,7 +43,8 @@
                 },                
                 "ManagedPolicyArns": [
                     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-                    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+                    "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
                 ]
             }
             
@@ -53,7 +54,7 @@
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription" : "Allow http requests",
-                "VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VPCID"}},
+                "VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackName}-VPCID"}},
                 "SecurityGroupIngress" : [{
                     "IpProtocol" : "tcp",
                     "FromPort" : 80,
@@ -67,8 +68,13 @@
                 }],
                 "SecurityGroupEgress" : [{
                     "IpProtocol" : "tcp",
-                    "FromPort" : 0,
-                    "ToPort" : 0,
+                    "FromPort" : 80,
+                    "ToPort" : 80,
+                    "CidrIp" : "0.0.0.0/0"
+                },{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 443,
+                    "ToPort" : 443,
                     "CidrIp" : "0.0.0.0/0"
                 }]
             }            
@@ -78,12 +84,12 @@
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription" : "Allow MySql/Aurora requests",
-                "VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VPCID"}},
+                "VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackName}-VPCID"}},
                 "SecurityGroupIngress" : [{
                     "IpProtocol" : "tcp",
                     "FromPort" : 3306,
                     "ToPort" : 3306,
-                    "SourceSecurityGroupId": { "Fn:GetAtt": ["WeatherLambdaSecurityGroup", "GroupId"]}
+                    "SourceSecurityGroupId": { "Fn::GetAtt": ["WeatherLambdaSecurityGroup", "GroupId"]}
                 }],
                 "SecurityGroupEgress" : [{
                     "IpProtocol" : "tcp",
@@ -108,6 +114,9 @@
                     "S3Bucket": { "Ref": "LambdaBucketName" },
                     "S3Key": "weather-api.zip"
                 },
+                "Environment": {
+                    "Variables" : { "ConnectionStrings__Main": "server=127.0.0.1;port=3306;user=root;password=example;database=LocationLog;" }
+                },
                 "Runtime": "dotnetcore3.1",
                 "Timeout": 6,
                 "MemorySize": 512,
@@ -117,8 +126,8 @@
                 "VpcConfig": {
                     "SecurityGroupIds" : [ { "Fn::GetAtt": ["WeatherLambdaSecurityGroup", "GroupId"] } ],
                     "SubnetIds" : [
-                        {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-PrivateSubnet1AID"}},
-                        {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-PrivateSubnet1BID"}}
+                        {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackName}-PrivateSubnet1AID"}},
+                        {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackName}-PrivateSubnet1BID"}}
                     ]
                 }
             }
@@ -130,7 +139,7 @@
                 "TemplateURL" : "https://s3.amazonaws.com/miked-cf-stacks/api-proxy.cf.json",
                 "Parameters" : {
                     "ApiName" : "weather-api",
-                    "LambdaArn" : { "Fn::GetAtt" : [ "WeatherApiLambda", "arn" ] }
+                    "LambdaArn" : { "Fn::GetAtt" : [ "WeatherApiLambda", "Arn" ] }
                 }
             }
         }
